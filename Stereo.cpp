@@ -4,30 +4,61 @@
 #include <cfloat>
 #include <cstdlib>
 #include <chrono>
+#include <array>
 
-int compareBlock(const cv::Mat &left, const cv::Mat &right, int d, int x, int y, int block = 7)
+class BlockBuffer
+{
+private:
+    uchar buffer[7][7];
+    int oldestColumn = 0;
+
+public:
+    void addColumn(const std::array<uchar, 7> &column)
+    {
+        for (int y = 0; y < 7; y++)
+        {
+            buffer[oldestColumn][y] = column[y];
+        }
+        oldestColumn = (oldestColumn + 1) % 7;
+    }
+    int getPixel(int x, int y)
+    {
+        int x_pos = (oldestColumn + x) % 7;
+        return buffer[x_pos][y];
+    }
+};
+
+int compareBlock(const cv::Mat &left, const cv::Mat &right, int d, int x, int y, BlockBuffer &buffer, bool &firstRun, int block = 7)
 {
     int cost = 0;
     int radius = block / 2;
-    for (int x_offset = radius * -1; x_offset <= radius; x_offset++)
+
+    if (firstRun)
     {
-        for (int y_offset = radius * -1; y_offset <= radius; y_offset++)
+        std::array<uchar, 7> column;
+        for (int x_offset = radius * -1; x_offset <= radius; x_offset++)
         {
-            if (y_offset + y < 0 || y_offset + y >= left.rows)
+            for (int y_offset = radius * -1; y_offset <= radius; y_offset++)
             {
-                continue;
+                if (y_offset + y < 0 || y_offset + y >= left.rows)
+                {
+                    continue;
+                }
+                if (x + x_offset < 0 || x + x_offset >= left.cols)
+                {
+                    continue;
+                }
+                if (x + x_offset - d < 0 || x + x_offset - d >= left.cols)
+                {
+                    continue;
+                }
+                int disparity = std::abs(left.at<uchar>(y + y_offset, x + x_offset) - right.at<uchar>(y + y_offset, x + x_offset - d));
+                column[y_offset + radius] = left.at<uchar>(y + y_offset, x + x_offset);
+                cost += disparity;
             }
-            if (x + x_offset < 0 || x + x_offset >= left.cols)
-            {
-                continue;
-            }
-            if (x + x_offset - d < 0 || x + x_offset - d >= left.cols)
-            {
-                continue;
-            }
-            int disparity = std::abs(left.at<uchar>(y + y_offset, x + x_offset) - right.at<uchar>(y + y_offset, x + x_offset - d));
-            cost += disparity;
+            buffer.addColumn(column)
         }
+        firstRun = false;
     }
     return cost;
 }
@@ -35,6 +66,10 @@ int compareBlock(const cv::Mat &left, const cv::Mat &right, int d, int x, int y,
 cv::Mat myStereo(const cv::Mat &left, const cv::Mat &right, int maxDisp, int block = 7, int focalLength = 3740)
 {
     int radius = block / 2;
+
+    BlockBuffer buffer;
+    bool firstRun = true;
+
     cv::Mat disparityMap = cv::Mat::zeros(left.size(), CV_8UC1);
     for (int x = radius; x < left.cols - radius; x++)
     {
@@ -44,7 +79,7 @@ cv::Mat myStereo(const cv::Mat &left, const cv::Mat &right, int maxDisp, int blo
             double bestCost = DBL_MAX;
             for (int d = 0; d < maxDisp; d++)
             {
-                int cost = compareBlock(left, right, d, x, y, block);
+                int cost = compareBlock(left, right, d, x, y, buffer, block, firstRun);
                 if (cost < bestCost)
                 {
                     bestCost = cost;
