@@ -1,0 +1,13 @@
+# ninja log v7
+3	984	8124857854038253	CMakeFiles/stereo_depth.dir/Stereo.cpp.obj	71d350e8685c0a36
+986	1102	8124857863870911	stereo_depth.exe	77ab2617bc5c7f0b
+16	954	8124859323206538	CMakeFiles/stereo_depth.dir/Stereo.cpp.obj	71d350e8685c0a36
+955	1080	8124859332588605	stereo_depth.exe	77ab2617bc5c7f0b
+16	973	8124859606492298	CMakeFiles/stereo_depth.dir/Stereo.cpp.obj	71d350e8685c0a36
+974	1089	8124859616066155	stereo_depth.exe	77ab2617bc5c7f0b
+15	1031	8124860135353919	CMakeFiles/stereo_depth.dir/Stereo.cpp.obj	71d350e8685c0a36
+1031	1151	8124860145510040	stereo_depth.exe	77ab2617bc5c7f0b
+15	996	8124860445482171	CMakeFiles/stereo_depth.dir/Stereo.cpp.obj	71d350e8685c0a36
+997	1116	8124860455302239	stereo_depth.exe	77ab2617bc5c7f0b
+6	979	8124872794540372	CMakeFiles/stereo_depth.dir/Stereo.cpp.obj	71d350e8685c0a36
+980	1113	8124872804284508	stereo_depth.exe	77ab2617bc5c7f0b

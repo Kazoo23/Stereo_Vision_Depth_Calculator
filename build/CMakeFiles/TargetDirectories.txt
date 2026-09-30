@@ -1,0 +1,3 @@
+D:/Stereo_Vision_Depth_Calculator/build/CMakeFiles/stereo_depth.dir
+D:/Stereo_Vision_Depth_Calculator/build/CMakeFiles/edit_cache.dir
+D:/Stereo_Vision_Depth_Calculator/build/CMakeFiles/rebuild_cache.dir

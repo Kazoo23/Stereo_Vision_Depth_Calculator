@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.18)
+project(stereo_depth)
+set(CMAKE_CXX_STANDARD 17)
+find_package(OpenCV REQUIRED)
+add_executable(stereo_depth Stereo.cpp)
+target_link_libraries(stereo_depth ${OpenCV_LIBS})
