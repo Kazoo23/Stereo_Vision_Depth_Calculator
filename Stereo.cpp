@@ -60,7 +60,6 @@ cv:
     cv::Mat coloredDisparity;
     cv::applyColorMap(disparity8U, coloredDisparity, cv::COLORMAP_JET);
 
-    cv::namedWindow("Display Window", cv::WINDOW_AUTOSIZE);
     cv::imshow("Left Image", L);
     cv::imshow("Disparity Map", coloredDisparity);
 
