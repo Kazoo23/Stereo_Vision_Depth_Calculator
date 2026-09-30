@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iostream>
 
+
 int main(int argc, char **argv)
 {
 
@@ -28,8 +29,7 @@ int main(int argc, char **argv)
 
     cv::cvtColor(L, LG, cv::COLOR_BGR2GRAY);
 
-cv:
-    cvtColor(R, RG, cv::COLOR_BGR2GRAY);
+    cv::cvtColor(R, RG, cv::COLOR_BGR2GRAY);
 
     int minDisparity = 0;
     int numDisparities = 64;
