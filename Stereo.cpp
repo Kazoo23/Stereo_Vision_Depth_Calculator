@@ -84,7 +84,7 @@ int main(int argc, char **argv)
     cv::Mat depth8U;
     cv::normalize(depthMap, depth8U, 0, 255, cv::NORM_MINMAX, CV_8U);
 
-    cv::normalize(depthMap,depth8U, 0,255,cv::NORM_MINMAX,CV_8UC1);
+    cv::normalize(depthMap, depth8U, 0, 255, cv::NORM_MINMAX, CV_8UC1);
 
     cv::Mat coloredDisparity;
     cv::applyColorMap(disparity8U, coloredDisparity, cv::COLORMAP_JET);
@@ -94,10 +94,57 @@ int main(int argc, char **argv)
 
     coloredDepth.setTo(cv::Scalar(0, 0, 0), disparityMask);
 
+    cv::Mat shift_x(R.size(), CV_32F);
+    cv::Mat shift_y(R.size(), CV_32F);
+
+    for (int y = 0; y < R.rows; y++)
+    {
+        for (int x = 0; x < R.cols; x++)
+        {
+            float disparity = disparity165.at<short>(y, x) / 16.0f;
+            if (disparity > 0)
+            {
+                float rightX = x - disparity;
+                if (rightX > 0)
+                {
+                    shift_x.at<float>(y, x) = (rightX);
+                }
+                else
+                {
+                    shift_x.at<float>(y, x) = x;
+                }
+                shift_y.at<float>(y, x) = y;
+            }
+            else
+            {
+                shift_x.at<float>(y, x) = x;
+                shift_y.at<float>(y, x) = y;
+            }
+        }
+    }
+
+    cv::Mat shiftedR;
+    cv::remap(
+        R,
+        shiftedR,
+        shift_x,
+        shift_y,
+        cv::INTER_LINEAR
+    );
+
+    cv::Mat stereoImg;
+
+    stereoImg = 0.5 * L + 0.5 * shiftedR;
+
+    cv::Mat depthOverlay;
+    cv::addWeighted(stereoImg,0.8,coloredDepth, 0.2,0,depthOverlay);
+
     cv::imshow("Left Image", L);
     cv::imshow("Right Image", R);
+    cv::imshow("Stereo Image",stereoImg);
     cv::imshow("Disparity Map", coloredDisparity);
     cv::imshow("Depth Map", coloredDepth);
+    cv::imshow("Overlay",depthOverlay);
 
     cv::waitKey(0);
     return 0;
